@@ -28,7 +28,7 @@
     font-family: var(--font);
     min-height: 100vh;
   }
- 
+
   /* LOGIN */
   #login-screen {
     display: flex;
@@ -103,7 +103,7 @@
   }
   .btn-primary:hover { opacity: 0.85; }
   .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
- 
+
   /* DASHBOARD */
   #dashboard { display: none; }
   .topbar {
@@ -158,7 +158,7 @@
     font-size: 10px;
     color: var(--text2);
   }
- 
+
   /* SUMMARY CARDS */
   .summary-bar {
     display: grid;
@@ -188,7 +188,7 @@
   .summary-value.red { color: var(--red); }
   .summary-value.green { color: var(--green); }
   .summary-value.yellow { color: var(--yellow); }
- 
+
   /* TABS */
   .tabs {
     display: flex;
@@ -212,10 +212,10 @@
   }
   .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
   .tab:hover:not(.active) { color: var(--text); }
- 
+
   /* MAIN CONTENT */
   .main { padding: 24px; }
- 
+
   /* TABLE */
   .table-wrapper {
     background: var(--surface);
@@ -283,7 +283,7 @@
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: rgba(255,255,255,0.02); }
   .mono { font-family: var(--font-mono); font-size: 11px; }
- 
+
   /* BADGES */
   .badge {
     display: inline-flex;
@@ -301,7 +301,7 @@
   .badge-yellow { background: rgba(240,192,64,0.15); color: var(--yellow); }
   .badge-blue { background: rgba(79,159,255,0.15); color: var(--blue); }
   .badge-gray { background: rgba(122,128,153,0.15); color: var(--text2); }
- 
+
   /* QUALITY DOT */
   .quality-dot {
     width: 10px;
@@ -314,7 +314,7 @@
   .q-yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
   .q-red { background: var(--red); box-shadow: 0 0 6px var(--red); }
   .q-gray { background: var(--text2); }
- 
+
   /* METRIC MINI */
   .metric-mini {
     display: flex;
@@ -330,7 +330,7 @@
     font-size: 11px;
     color: var(--text2);
   }
- 
+
   /* PROGRESS BAR */
   .progress-wrap { display: flex; align-items: center; gap: 8px; }
   .progress-bar {
@@ -352,7 +352,7 @@
     color: var(--text2);
     white-space: nowrap;
   }
- 
+
   /* STOCK COMPARE */
   .stock-compare {
     display: flex;
@@ -365,7 +365,7 @@
   .stock-ml { color: var(--green); }
   .stock-sep { color: var(--text2); }
   .stock-alert { color: var(--red); font-weight: 700; }
- 
+
   /* PRODUCT NAME */
   .product-name {
     font-weight: 500;
@@ -387,7 +387,7 @@
     font-size: 10px;
   }
   .product-link:hover { color: var(--accent); }
- 
+
   /* LOADING */
   .loading-overlay {
     position: fixed;
@@ -422,7 +422,7 @@
     color: var(--accent);
     opacity: 0.7;
   }
- 
+
   /* EMPTY */
   .empty-state {
     text-align: center;
@@ -432,7 +432,7 @@
     font-size: 12px;
     letter-spacing: 2px;
   }
- 
+
   /* ALERT PANEL */
   .alerts-panel {
     display: flex;
@@ -462,7 +462,7 @@
     padding: 2px 6px;
     border-radius: 4px;
   }
- 
+
   /* ERROR */
   .error-box {
     background: rgba(255,79,106,0.1);
@@ -475,19 +475,19 @@
     font-family: var(--font-mono);
     font-size: 11px;
   }
- 
+
   /* TOOLTIP */
   [title] { cursor: help; }
- 
+
   /* SCROLLBAR */
   ::-webkit-scrollbar { width: 6px; height: 6px; }
   ::-webkit-scrollbar-track { background: var(--bg); }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
- 
+
   /* TAB PANELS */
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
- 
+
   /* QUESTIONS */
   .question-item {
     background: var(--surface);
@@ -509,7 +509,7 @@
     color: var(--text2);
     margin-top: 6px;
   }
- 
+
   @media (max-width: 768px) {
     .summary-bar { grid-template-columns: repeat(2, 1fr); }
     th, td { padding: 8px 10px; }
@@ -518,20 +518,20 @@
 </style>
 </head>
 <body>
- 
+
 <!-- LOADING -->
 <div class="loading-overlay" id="loading" style="display:none">
   <div class="loading-spinner"></div>
   <div class="loading-text">Cargando datos</div>
   <div class="loading-step" id="loading-step">Conectando con Mercado Libre...</div>
 </div>
- 
+
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">TuBotiquín</div>
     <div class="login-title">Panel de Gestión<br>Mercado Libre</div>
- 
+
     <div class="field">
       <label>Access Token ML</label>
       <input type="password" id="token-input" placeholder="APP_USR-..." />
@@ -556,7 +556,7 @@
     <div id="login-error"></div>
   </div>
 </div>
- 
+
 <!-- DASHBOARD -->
 <div id="dashboard">
   <div class="topbar">
@@ -571,10 +571,10 @@
       <button class="btn-refresh" onclick="cerrarSesion()" style="color:var(--red)">Salir</button>
     </div>
   </div>
- 
+
   <!-- SUMMARY -->
   <div class="summary-bar" id="summary-bar"></div>
- 
+
   <!-- TABS -->
   <div class="tabs">
     <div class="tab active" onclick="switchTab('alertas', this)">⚠ Alertas</div>
@@ -585,7 +585,7 @@
     <div class="tab" onclick="switchTab('conversion', this)">📊 Conversión</div>
     <div class="tab" onclick="switchTab('preguntas', this)">💬 Preguntas</div>
   </div>
- 
+
   <div class="main">
     <!-- ALERTAS -->
     <div class="tab-panel active" id="tab-alertas">
@@ -593,7 +593,7 @@
         <div class="empty-state">Cargando alertas...</div>
       </div>
     </div>
- 
+
     <!-- PUBLICACIONES -->
     <div class="tab-panel" id="tab-publicaciones">
       <div class="table-wrapper">
@@ -625,7 +625,7 @@
         </div>
       </div>
     </div>
- 
+
     <!-- MARGENES -->
     <div class="tab-panel" id="tab-margenes">
       <div class="table-wrapper">
@@ -652,7 +652,7 @@
         </div>
       </div>
     </div>
- 
+
     <!-- STOCK -->
     <div class="tab-panel" id="tab-stock">
       <div class="table-wrapper">
@@ -677,7 +677,7 @@
         </div>
       </div>
     </div>
- 
+
     <!-- ROTACION -->
     <div class="tab-panel" id="tab-rotacion">
       <div class="table-wrapper">
@@ -700,7 +700,7 @@
         </div>
       </div>
     </div>
- 
+
     <!-- CONVERSION -->
     <div class="tab-panel" id="tab-conversion">
       <div class="table-wrapper">
@@ -723,7 +723,7 @@
         </div>
       </div>
     </div>
- 
+
     <!-- PREGUNTAS -->
     <div class="tab-panel" id="tab-preguntas">
       <div id="preguntas-container">
@@ -732,7 +732,7 @@
     </div>
   </div>
 </div>
- 
+
 <script>
 // ============================================================
 // CONFIG & STATE
@@ -752,14 +752,14 @@ let STATE = {
   preguntas: [],
   filtroPublicaciones: 'todas'
 };
- 
+
 // ============================================================
 // UTILS
 // ============================================================
 const fmt = n => isNaN(n) ? '—' : '$' + Math.round(n).toLocaleString('es-CL');
 const fmtPct = n => isNaN(n) ? '—' : n.toFixed(1) + '%';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
- 
+
 async function mlFetch(path) {
   const r = await fetch('/api/ml' + path, {
     headers: { Authorization: 'Bearer ' + CONFIG.token }
@@ -767,12 +767,12 @@ async function mlFetch(path) {
   if (!r.ok) throw new Error('ML API error: ' + r.status + ' ' + path);
   return r.json();
 }
- 
+
 function setLoadingStep(txt) {
   const el = document.getElementById('loading-step');
   if (el) el.textContent = txt;
 }
- 
+
 // ============================================================
 // GOOGLE SHEETS — leer CSV públicamente
 // ============================================================
@@ -782,7 +782,7 @@ async function leerSheetUrl(url) {
   const txt = await r.text();
   return csvToArray(txt);
 }
- 
+
 async function leerSheet(sheetId, gid) {
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
   const r = await fetch(url);
@@ -790,7 +790,7 @@ async function leerSheet(sheetId, gid) {
   const txt = await r.text();
   return csvToArray(txt);
 }
- 
+
 function csvToArray(csv) {
   const lines = csv.trim().split('\n');
   const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim().toLowerCase().replace(/ /g, '_'));
@@ -801,7 +801,7 @@ function csvToArray(csv) {
     return obj;
   });
 }
- 
+
 function parseCsvLine(line) {
   const result = [];
   let current = '';
@@ -814,12 +814,12 @@ function parseCsvLine(line) {
   result.push(current);
   return result;
 }
- 
+
 function limpiarNumero(str) {
   if (!str) return 0;
   return parseFloat(str.replace(/[$\.\s]/g, '').replace(',', '.')) || 0;
 }
- 
+
 // ============================================================
 // CONECTAR
 // ============================================================
@@ -829,45 +829,45 @@ async function conectar() {
   const sheetLocalUrl = document.getElementById('sheet-local-url').value.trim();
   const diasAlerta = parseInt(document.getElementById('dias-alerta').value) || 7;
   const stockAlerta = parseInt(document.getElementById('stock-alerta').value) || 3;
- 
+
   if (!token) { showLoginError('Ingresa el Access Token'); return; }
   if (!sheetProductosUrl) { showLoginError('Ingresa la URL del Sheet de productos'); return; }
- 
+
   CONFIG = { token, sheetProductosUrl, sheetLocalUrl, diasAlerta, stockAlerta };
   document.getElementById('btn-connect').disabled = true;
- 
+
   try {
     document.getElementById('loading').style.display = 'flex';
- 
+
     // 1. Verificar token
     setLoadingStep('Verificando credenciales ML...');
     const me = await mlFetch('/users/me');
     CONFIG.sellerId = me.id;
     document.getElementById('seller-name').textContent = me.nickname || me.id;
- 
+
     // 2. Leer Google Sheet - productos
     setLoadingStep('Leyendo Google Sheet (productos)...');
     await cargarSheetProductos();
- 
+
     // 3. Leer Google Sheet - inventario local
     setLoadingStep('Leyendo Google Sheet (inventario local)...');
     await cargarSheetLocal();
- 
+
     // 4. Cargar datos ML
     setLoadingStep('Cargando publicaciones desde ML...');
     await cargarDatosML();
- 
+
     // 5. Renderizar
     setLoadingStep('Renderizando dashboard...');
     renderDashboard();
- 
+
     document.getElementById('loading').style.display = 'none';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('dashboard').style.display = 'block';
- 
+
     const now = new Date();
     document.getElementById('last-update').textContent = 'Actualizado: ' + now.toLocaleTimeString('es-CL');
- 
+
   } catch(e) {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('btn-connect').disabled = false;
@@ -875,11 +875,11 @@ async function conectar() {
     console.error(e);
   }
 }
- 
+
 function showLoginError(msg) {
   document.getElementById('login-error').innerHTML = `<div class="error-box">✗ ${msg}</div>`;
 }
- 
+
 // ============================================================
 // CARGAR SHEET PRODUCTOS
 // ============================================================
@@ -892,11 +892,12 @@ async function cargarSheetProductos() {
     sku_meli: r.sku_meli || '',
     costo_neto: limpiarNumero(r.costo_neto),
     precio_objetivo: limpiarNumero(r.precio_objetivo),
-    rotacion_esperada: parseFloat(r.rotacion_esperada) || 0
+    rotacion_esperada: parseFloat(r.rotacion_esperada) || 0,
+    costo_envio_sheet: limpiarNumero(r.costo_envio) || null
   }));
   if (STATE.productos.length === 0) throw new Error('No se encontraron productos en la hoja "productos". Revisa que el Sheet sea público.');
 }
- 
+
 // ============================================================
 // CARGAR SHEET LOCAL (inventario)
 // ============================================================
@@ -918,7 +919,7 @@ async function cargarSheetLocal() {
     STATE.inventario = {};
   }
 }
- 
+
 // ============================================================
 // CARGAR DATOS ML
 // ============================================================
@@ -926,7 +927,7 @@ async function cargarDatosML() {
   const itemIds = STATE.productos.map(p => p.item_id_num);
   const chunks = [];
   for (let i = 0; i < itemIds.length; i += 20) chunks.push(itemIds.slice(i, i + 20));
- 
+
   let mlItems = [];
   for (const chunk of chunks) {
     setLoadingStep(`Cargando items ML (${mlItems.length + chunk.length}/${itemIds.length})...`);
@@ -934,7 +935,7 @@ async function cargarDatosML() {
     mlItems = mlItems.concat(data);
     await sleep(200);
   }
- 
+
   // Cargar tarifas reales por item (comisión y envío)
   setLoadingStep('Cargando tarifas reales por publicación...');
   const tarifasMap = {};
@@ -945,26 +946,23 @@ async function cargarDatosML() {
     const listingType = item.body.listing_type_id;
     const freeShipping = item.body.shipping && item.body.shipping.free_shipping;
     try {
-      const lt = await mlFetch(`/sites/MLC/listing_types/${listingType}`);
-      let comisionPct = listingType && listingType.includes('gold_special') ? 0.13 : 0.165;
-      if (lt && lt.configurations) {
-        const fee = lt.configurations.find(c => c.id === 'sale_fee_amount');
-        if (fee && fee.value) comisionPct = parseFloat(fee.value) / 100;
-      }
-      const costoEnvio = freeShipping ? Math.round(precio * 0.03) : 0;
-      tarifasMap[id] = { comisionPct, costoEnvio };
-      await sleep(100);
+      const fees = await mlFetch(`/items/${id}/sale_fees?price=${precio}&listing_type_id=${listingType}`);
+      const comisionMonto = fees.sale_fee_amount || 0;
+      const comisionPct = precio > 0 ? comisionMonto / precio : 0.13;
+      const costoEnvio = fees.shipping_fee || 0;
+      tarifasMap[id] = { comisionPct, comisionMonto, costoEnvio };
+      await sleep(150);
     } catch(e) {
       const comisionPct = (listingType === 'gold_pro' || listingType === 'gold_premium') ? 0.165 : 0.13;
-      tarifasMap[id] = { comisionPct, costoEnvio: freeShipping ? Math.round(precio * 0.03) : 0 };
+      tarifasMap[id] = { comisionPct, comisionMonto: Math.round(precio * comisionPct), costoEnvio: freeShipping ? 3950 : 0 };
     }
   }
- 
+
   // Cargar visitas y ventas (últimos 30 días)
   setLoadingStep('Cargando métricas de visitas...');
   const visitsMap = {};
   const soldMap = {};
- 
+
   for (const p of STATE.productos) {
     try {
       const visits = await mlFetch(`/items/${p.item_id}/visits?last=30`);
@@ -972,7 +970,7 @@ async function cargarDatosML() {
       await sleep(150);
     } catch(e) { visitsMap[p.item_id] = 0; }
   }
- 
+
   // Ventas últimos 30 días
   setLoadingStep('Cargando ventas del mes...');
   try {
@@ -1005,19 +1003,19 @@ async function cargarDatosML() {
       }
     }
   } catch(e) { console.warn('Error cargando órdenes:', e); }
- 
+
   // Preguntas sin responder
   setLoadingStep('Cargando preguntas...');
   try {
     const q = await mlFetch(`/questions/search?seller_id=${CONFIG.sellerId}&status=UNANSWERED&limit=50`);
     STATE.preguntas = q.questions || [];
   } catch(e) { STATE.preguntas = []; }
- 
+
   // Combinar todo
   STATE.items = STATE.productos.map(prod => {
     const mlRaw = mlItems.find(m => m && m.body && m.body.id === prod.item_id);
     const ml = mlRaw ? mlRaw.body : null;
- 
+
     const precio = ml ? ml.price : 0;
     // Comisión y envío reales desde tarifasMap
     const tarifa = tarifasMap[prod.item_id] || null;
@@ -1025,26 +1023,27 @@ async function cargarDatosML() {
     let costoEnvio = 0;
     if (tarifa) {
       comisionPct = tarifa.comisionPct;
-      costoEnvio = tarifa.costoEnvio;
+      // Priorizar costo_envio definido en Sheet, luego el de la API
+      costoEnvio = prod.costo_envio_sheet !== null ? prod.costo_envio_sheet : tarifa.costoEnvio;
     } else if (ml) {
       comisionPct = (ml.listing_type_id === 'gold_pro' || ml.listing_type_id === 'gold_premium') ? 0.165 : 0.13;
-      costoEnvio = (ml.shipping && ml.shipping.free_shipping) ? Math.round(precio * 0.03) : 0;
+      costoEnvio = prod.costo_envio_sheet !== null ? prod.costo_envio_sheet : ((ml.shipping && ml.shipping.free_shipping) ? Math.round(precio * 0.165) : 0);
     }
     const ingresoBruto = precio - (precio * comisionPct) - costoEnvio;
     const ingresoNeto = ingresoBruto / IVA;
     const utilidadNeta = ingresoNeto - prod.costo_neto;
     const margenNeto = ingresoNeto > 0 ? (utilidadNeta / ingresoNeto * 100) : 0;
- 
+
     // Stock
     const inv = STATE.inventario[prod.sku_local] || null;
     const stockLocal = inv ? inv.quinta_normal : null;
     const stockML = ml ? ml.available_quantity : null;
     const stockFull = inv ? inv.full_ml : 0;
- 
+
     // Días sin venta (aproximado desde last_updated si sold=0)
     const ventasMes = soldMap[prod.item_id] || 0;
     const diasSinVenta = ventasMes === 0 && ml ? Math.floor((Date.now() - new Date(ml.last_updated)) / 86400000) : 0;
- 
+
     // Calidad
     let calidad = 'unknown';
     if (ml && ml.health !== undefined) {
@@ -1052,10 +1051,10 @@ async function cargarDatosML() {
       else if (ml.health >= 0.4) calidad = 'yellow';
       else calidad = 'red';
     }
- 
+
     // Precio fuera de objetivo
     const precioFueraObjetivo = prod.precio_objetivo > 0 && precio > prod.precio_objetivo * 1.02;
- 
+
     return {
       ...prod,
       ml,
@@ -1078,7 +1077,7 @@ async function cargarDatosML() {
     };
   });
 }
- 
+
 // ============================================================
 // RENDER DASHBOARD
 // ============================================================
@@ -1092,7 +1091,7 @@ function renderDashboard() {
   renderConversion();
   renderPreguntas();
 }
- 
+
 function renderSummary() {
   const items = STATE.items;
   const totalPublicaciones = items.filter(i => i.ml && i.ml.status === 'active').length;
@@ -1101,7 +1100,7 @@ function renderSummary() {
   const stockCritico = items.filter(i => i.stockML !== null && i.stockML <= CONFIG.stockAlerta).length;
   const preguntasPend = STATE.preguntas.length;
   const margenProm = items.filter(i => i.margenNeto !== 0).reduce((a, b) => a + b.margenNeto, 0) / (items.filter(i => i.margenNeto !== 0).length || 1);
- 
+
   document.getElementById('summary-bar').innerHTML = `
     <div class="summary-card">
       <div class="summary-label">Publicaciones activas</div>
@@ -1129,13 +1128,13 @@ function renderSummary() {
     </div>
   `;
 }
- 
+
 function renderAlertas() {
   const alertas = [];
   STATE.items.forEach(item => {
     const nombre = item.ml ? item.ml.title : item.item_id;
     const sku = item.sku_local;
- 
+
     if (item.precioFueraObjetivo) {
       alertas.push({ tipo: 'critical', icon: '💸', texto: `<strong>${nombre}</strong> — Precio actual ${fmt(item.precio)} supera el objetivo ${fmt(item.precio_objetivo)}. Promoción posiblemente vencida.`, sku });
     }
@@ -1157,12 +1156,12 @@ function renderAlertas() {
       alertas.push({ tipo: 'critical', icon: '⏸', texto: `<strong>${nombre}</strong> — Publicación PAUSADA. No está generando ventas.`, sku });
     }
   });
- 
+
   // Preguntas sin responder
   if (STATE.preguntas.length > 0) {
     alertas.push({ tipo: 'warning', icon: '💬', texto: `Tienes <strong>${STATE.preguntas.length} pregunta(s)</strong> sin responder. ML penaliza el tiempo de respuesta.`, sku: '' });
   }
- 
+
   const container = document.getElementById('alerts-container');
   if (alertas.length === 0) {
     container.innerHTML = `<div class="empty-state" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--green)">✓ SIN ALERTAS — Todo opera correctamente</div>`;
@@ -1176,13 +1175,13 @@ function renderAlertas() {
     </div>
   `).join('');
 }
- 
+
 function renderPublicaciones() {
   const tbody = document.getElementById('tbody-publicaciones');
   let items = STATE.items;
   if (STATE.filtroPublicaciones === 'alerta') items = items.filter(i => i.tieneAlerta);
   if (STATE.filtroPublicaciones === 'paused') items = items.filter(i => i.ml && i.ml.status === 'paused');
- 
+
   tbody.innerHTML = items.map(item => {
     const ml = item.ml;
     const nombre = ml ? ml.title : item.item_id;
@@ -1190,23 +1189,23 @@ function renderPublicaciones() {
     const estadoBadge = estado === 'active' ? `<span class="badge badge-green">ACTIVA</span>` :
                         estado === 'paused' ? `<span class="badge badge-red">PAUSADA</span>` :
                         `<span class="badge badge-gray">${estado.toUpperCase()}</span>`;
- 
+
     const calidadDot = item.calidad === 'green' ? `<span class="quality-dot q-green"></span>Alta` :
                        item.calidad === 'yellow' ? `<span class="quality-dot q-yellow"></span>Media` :
                        item.calidad === 'red' ? `<span class="quality-dot q-red"></span>Baja` :
                        `<span class="quality-dot q-gray"></span>—`;
- 
+
     const precioBadge = item.precioFueraObjetivo ?
       `<span class="badge badge-red">⚠ FUERA</span>` :
       `<span class="badge badge-green">OK</span>`;
- 
+
     const tipoLabel = ml ? (ml.listing_type_id === 'gold_pro' || ml.listing_type_id === 'gold_premium' ? 'Premium' : 'Clásica') : '—';
- 
+
     const diasBadge = item.diasSinVenta >= CONFIG.diasAlerta ?
       `<span class="badge badge-red">${item.diasSinVenta}d</span>` :
       item.diasSinVenta > 0 ? `<span class="badge badge-yellow">${item.diasSinVenta}d</span>` :
       `<span class="badge badge-green">Reciente</span>`;
- 
+
     return `<tr>
       <td>
         <div class="product-name" title="${nombre}">${nombre}</div>
@@ -1224,7 +1223,7 @@ function renderPublicaciones() {
     </tr>`;
   }).join('') || '<tr><td colspan="9" class="empty-state">Sin publicaciones</td></tr>';
 }
- 
+
 function renderMargenes() {
   const tbody = document.getElementById('tbody-margenes');
   tbody.innerHTML = STATE.items.map(item => {
@@ -1233,7 +1232,7 @@ function renderMargenes() {
     const margenColor = item.margenNeto < 10 ? 'red' : item.margenNeto < 20 ? 'yellow' : 'green';
     const utilColor = item.utilidadNeta < 0 ? 'red' : 'green';
     const tipoEnvio = ml && ml.shipping && ml.shipping.free_shipping ? 'Gratis' : 'Comprador';
- 
+
     return `<tr>
       <td>
         <div class="product-name" title="${nombre}">${nombre}</div>
@@ -1241,7 +1240,7 @@ function renderMargenes() {
       </td>
       <td class="mono">${fmt(item.precio)}</td>
       <td class="mono">${fmtPct(item.comisionPct * 100)}<br><span style="color:var(--text2);font-size:10px">${fmt(item.precio * item.comisionPct)}</span></td>
-      <td class="mono">${tipoEnvio}<br><span style="color:var(--text2);font-size:10px">${fmt(item.costoEnvio)}</span></td>
+      <td class="mono">${tipoEnvio}<br><span style="color:var(--text2);font-size:10px">${item.costoEnvio > 0 ? fmt(item.costoEnvio) : '$0'}</span></td>
       <td class="mono">${fmt(item.ingresoBruto)}</td>
       <td class="mono">${fmt(item.ingresoNeto)}</td>
       <td class="mono">${fmt(item.costo_neto)}</td>
@@ -1250,7 +1249,7 @@ function renderMargenes() {
     </tr>`;
   }).join('') || '<tr><td colspan="9" class="empty-state">Sin datos</td></tr>';
 }
- 
+
 function renderStock() {
   const tbody = document.getElementById('tbody-stock');
   tbody.innerHTML = STATE.items.map(item => {
@@ -1259,7 +1258,7 @@ function renderStock() {
     const qn = item.stockLocal;
     const stockML = item.stockML;
     const diff = (qn !== null && stockML !== null) ? (qn - stockML) : null;
- 
+
     let estadoBadge = '<span class="badge badge-gray">Sin datos</span>';
     if (qn !== null && stockML !== null) {
       if (stockML > qn + 2) estadoBadge = '<span class="badge badge-red">⚠ RIESGO QUIEBRE</span>';
@@ -1267,7 +1266,7 @@ function renderStock() {
       else if (diff >= 0) estadoBadge = '<span class="badge badge-green">OK</span>';
       else estadoBadge = '<span class="badge badge-yellow">REVISAR</span>';
     }
- 
+
     return `<tr>
       <td>
         <div class="product-name" title="${nombre}">${nombre}</div>
@@ -1281,7 +1280,7 @@ function renderStock() {
     </tr>`;
   }).join('') || '<tr><td colspan="7" class="empty-state">Sin datos</td></tr>';
 }
- 
+
 function renderRotacion() {
   const tbody = document.getElementById('tbody-rotacion');
   tbody.innerHTML = STATE.items.map(item => {
@@ -1294,7 +1293,7 @@ function renderRotacion() {
     const estadoBadge = pct >= 80 ? '<span class="badge badge-green">EN PLAN</span>' :
                         pct >= 50 ? '<span class="badge badge-yellow">BAJO PLAN</span>' :
                         '<span class="badge badge-red">MUY BAJO</span>';
- 
+
     return `<tr>
       <td>
         <div class="product-name" title="${nombre}">${nombre}</div>
@@ -1314,7 +1313,7 @@ function renderRotacion() {
     </tr>`;
   }).join('') || '<tr><td colspan="5" class="empty-state">Sin datos</td></tr>';
 }
- 
+
 function renderConversion() {
   const tbody = document.getElementById('tbody-conversion');
   tbody.innerHTML = STATE.items.map(item => {
@@ -1330,7 +1329,7 @@ function renderConversion() {
     else if (conv < 2) eval_txt = '<span class="badge badge-red">BAJA</span>';
     else if (conv < 5) eval_txt = '<span class="badge badge-yellow">MEDIA</span>';
     else eval_txt = '<span class="badge badge-green">BUENA</span>';
- 
+
     return `<tr>
       <td>
         <div class="product-name" title="${nombre}">${nombre}</div>
@@ -1343,7 +1342,7 @@ function renderConversion() {
     </tr>`;
   }).join('') || '<tr><td colspan="5" class="empty-state">Sin datos</td></tr>';
 }
- 
+
 function renderPreguntas() {
   const container = document.getElementById('preguntas-container');
   if (STATE.preguntas.length === 0) {
@@ -1366,7 +1365,7 @@ function renderPreguntas() {
     `;
   }).join('');
 }
- 
+
 // ============================================================
 // FILTROS Y TABS
 // ============================================================
@@ -1376,14 +1375,14 @@ function switchTab(name, el) {
   el.classList.add('active');
   document.getElementById('tab-' + name).classList.add('active');
 }
- 
+
 function filtrarPublicaciones(filtro, el) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   STATE.filtroPublicaciones = filtro;
   renderPublicaciones();
 }
- 
+
 async function refreshData() {
   document.getElementById('loading').style.display = 'flex';
   try {
@@ -1396,7 +1395,7 @@ async function refreshData() {
   }
   document.getElementById('loading').style.display = 'none';
 }
- 
+
 function cerrarSesion() {
   CONFIG = { token: '', sheetId: '', diasAlerta: 7, stockAlerta: 3, sellerId: '' };
   STATE = { productos: [], inventario: {}, items: [], preguntas: [], filtroPublicaciones: 'todas' };
