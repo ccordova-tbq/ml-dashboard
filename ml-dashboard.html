@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ML Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161920;
+    --surface2: #1e2330;
+    --border: #2a2f3d;
+    --text: #e8eaf0;
+    --text2: #7a8099;
+    --accent: #f0c040;
+    --green: #2ecc8a;
+    --red: #ff4f6a;
+    --yellow: #f0c040;
+    --blue: #4f9fff;
+    --font-mono: 'Space Mono', monospace;
+    --font: 'DM Sans', sans-serif;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+  }
+
+  /* LOGIN */
+  #login-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    gap: 32px;
+    padding: 24px;
+  }
+  .login-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 40px;
+    width: 100%;
+    max-width: 480px;
+  }
+  .login-logo {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .login-title {
+    font-size: 26px;
+    font-weight: 600;
+    margin-bottom: 32px;
+    line-height: 1.2;
+  }
+  .field { margin-bottom: 16px; }
+  .field label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 8px;
+    font-family: var(--font-mono);
+  }
+  .field input, .field select {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .field input:focus, .field select:focus { border-color: var(--accent); }
+  .field input::placeholder { color: var(--text2); }
+  .btn-primary {
+    width: 100%;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: opacity 0.2s;
+  }
+  .btn-primary:hover { opacity: 0.85; }
+  .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* DASHBOARD */
+  #dashboard { display: none; }
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .topbar-brand {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .topbar-sep { color: var(--border); }
+  .topbar-seller {
+    font-size: 13px;
+    color: var(--text2);
+  }
+  .topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .btn-refresh {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    padding: 6px 14px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: border-color 0.2s;
+  }
+  .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+  .last-update {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text2);
+  }
+
+  /* SUMMARY CARDS */
+  .summary-bar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .summary-card {
+    background: var(--surface);
+    padding: 20px 24px;
+  }
+  .summary-label {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 8px;
+  }
+  .summary-value {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .summary-value.red { color: var(--red); }
+  .summary-value.green { color: var(--green); }
+  .summary-value.yellow { color: var(--yellow); }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    padding: 0 24px;
+    overflow-x: auto;
+  }
+  .tab {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 14px 20px;
+    cursor: pointer;
+    color: var(--text2);
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* MAIN CONTENT */
+  .main { padding: 24px; }
+
+  /* TABLE */
+  .table-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .table-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .table-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+  }
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .filter-btn {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text2);
+    padding: 5px 12px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    cursor: pointer;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+  .filter-btn.active { background: var(--accent); color: #000; border-color: var(--accent); }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead tr {
+    background: var(--bg);
+  }
+  th {
+    padding: 10px 14px;
+    text-align: left;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text2);
+    font-weight: 400;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+  .mono { font-family: var(--font-mono); font-size: 11px; }
+
+  /* BADGES */
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+  .badge-green { background: rgba(46,204,138,0.15); color: var(--green); }
+  .badge-red { background: rgba(255,79,106,0.15); color: var(--red); }
+  .badge-yellow { background: rgba(240,192,64,0.15); color: var(--yellow); }
+  .badge-blue { background: rgba(79,159,255,0.15); color: var(--blue); }
+  .badge-gray { background: rgba(122,128,153,0.15); color: var(--text2); }
+
+  /* QUALITY DOT */
+  .quality-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  .q-green { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  .q-yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+  .q-red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+  .q-gray { background: var(--text2); }
+
+  /* METRIC MINI */
+  .metric-mini {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .metric-mini .val {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  .metric-mini .sub {
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  /* PROGRESS BAR */
+  .progress-wrap { display: flex; align-items: center; gap: 8px; }
+  .progress-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    min-width: 60px;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s;
+  }
+  .progress-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  /* STOCK COMPARE */
+  .stock-compare {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .stock-local { color: var(--blue); }
+  .stock-ml { color: var(--green); }
+  .stock-sep { color: var(--text2); }
+  .stock-alert { color: var(--red); font-weight: 700; }
+
+  /* PRODUCT NAME */
+  .product-name {
+    font-weight: 500;
+    font-size: 13px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .product-sku {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+  .product-link {
+    color: var(--text2);
+    text-decoration: none;
+    font-size: 10px;
+  }
+  .product-link:hover { color: var(--accent); }
+
+  /* LOADING */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 999;
+  }
+  .loading-spinner {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--text2);
+    text-transform: uppercase;
+  }
+  .loading-step {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--accent);
+    opacity: 0.7;
+  }
+
+  /* EMPTY */
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text2);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  /* ALERT PANEL */
+  .alerts-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .alert-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+  .alert-item.critical { border-left: 3px solid var(--red); }
+  .alert-item.warning { border-left: 3px solid var(--yellow); }
+  .alert-icon { font-size: 16px; }
+  .alert-text { flex: 1; }
+  .alert-sku {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text2);
+    background: var(--bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  /* ERROR */
+  .error-box {
+    background: rgba(255,79,106,0.1);
+    border: 1px solid rgba(255,79,106,0.3);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--red);
+    margin-top: 12px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+
+  /* TOOLTIP */
+  [title] { cursor: help; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* TAB PANELS */
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* QUESTIONS */
+  .question-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .question-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .question-text { font-size: 13px; color: var(--text); }
+  .question-product {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text2);
+    margin-top: 6px;
+  }
+
+  @media (max-width: 768px) {
+    .summary-bar { grid-template-columns: repeat(2, 1fr); }
+    th, td { padding: 8px 10px; }
+    .product-name { max-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loading" style="display:none">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">Cargando datos</div>
+  <div class="loading-step" id="loading-step">Conectando con Mercado Libre...</div>
+</div>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">TuBotiquín</div>
+    <div class="login-title">Panel de Gestión<br>Mercado Libre</div>
+
+    <div class="field">
+      <label>Access Token ML</label>
+      <input type="password" id="token-input" placeholder="APP_USR-..." />
+    </div>
+    <div class="field">
+      <label>Google Sheet ID</label>
+      <input type="text" id="sheet-id" placeholder="1-lgD8WQodkN0RimvhTHvcjEO2d_-GB1qi3kQQwrrzYg" value="1-lgD8WQodkN0RimvhTHvcjEO2d_-GB1qi3kQQwrrzYg" />
+    </div>
+    <div class="field">
+      <label>Días sin venta para alertar</label>
+      <input type="number" id="dias-alerta" value="7" min="1" />
+    </div>
+    <div class="field">
+      <label>Stock crítico (unidades)</label>
+      <input type="number" id="stock-alerta" value="3" min="1" />
+    </div>
+    <button class="btn-primary" id="btn-connect" onclick="conectar()">Conectar</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-left">
+      <span class="topbar-brand">ML Dashboard</span>
+      <span class="topbar-sep">|</span>
+      <span class="topbar-seller" id="seller-name">—</span>
+    </div>
+    <div class="topbar-right">
+      <span class="last-update" id="last-update"></span>
+      <button class="btn-refresh" onclick="refreshData()">↺ Actualizar</button>
+      <button class="btn-refresh" onclick="cerrarSesion()" style="color:var(--red)">Salir</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY -->
+  <div class="summary-bar" id="summary-bar"></div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('alertas', this)">⚠ Alertas</div>
+    <div class="tab" onclick="switchTab('publicaciones', this)">📦 Publicaciones</div>
+    <div class="tab" onclick="switchTab('margenes', this)">💰 Márgenes</div>
+    <div class="tab" onclick="switchTab('stock', this)">🏭 Stock</div>
+    <div class="tab" onclick="switchTab('rotacion', this)">🔄 Rotación</div>
+    <div class="tab" onclick="switchTab('conversion', this)">📊 Conversión</div>
+    <div class="tab" onclick="switchTab('preguntas', this)">💬 Preguntas</div>
+  </div>
+
+  <div class="main">
+    <!-- ALERTAS -->
+    <div class="tab-panel active" id="tab-alertas">
+      <div class="alerts-panel" id="alerts-container">
+        <div class="empty-state">Cargando alertas...</div>
+      </div>
+    </div>
+
+    <!-- PUBLICACIONES -->
+    <div class="tab-panel" id="tab-publicaciones">
+      <div class="table-wrapper">
+        <div class="table-header">
+          <span class="table-title">Publicaciones Activas</span>
+          <div class="filter-row">
+            <button class="filter-btn active" onclick="filtrarPublicaciones('todas', this)">Todas</button>
+            <button class="filter-btn" onclick="filtrarPublicaciones('alerta', this)">⚠ Con alerta</button>
+            <button class="filter-btn" onclick="filtrarPublicaciones('paused', this)">Pausadas</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="tabla-publicaciones">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Estado</th>
+                <th>Calidad</th>
+                <th>Precio actual</th>
+                <th>Precio objetivo</th>
+                <th>Precio</th>
+                <th>Tipo</th>
+                <th>Días sin venta</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-publicaciones"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARGENES -->
+    <div class="tab-panel" id="tab-margenes">
+      <div class="table-wrapper">
+        <div class="table-header">
+          <span class="table-title">Análisis de Márgenes</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="tabla-margenes">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Precio publicado</th>
+                <th>Comisión ML</th>
+                <th>Costo envío</th>
+                <th>Ingreso bruto</th>
+                <th>Ingreso neto</th>
+                <th>Costo neto</th>
+                <th>Utilidad neta</th>
+                <th>Margen %</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-margenes"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- STOCK -->
+    <div class="tab-panel" id="tab-stock">
+      <div class="table-wrapper">
+        <div class="table-header">
+          <span class="table-title">Stock — Quinta Normal vs ML</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="tabla-stock">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>SKU Local</th>
+                <th>Stock Quinta Normal</th>
+                <th>Stock ML</th>
+                <th>Stock Full ML</th>
+                <th>Diferencia</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-stock"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROTACION -->
+    <div class="tab-panel" id="tab-rotacion">
+      <div class="table-wrapper">
+        <div class="table-header">
+          <span class="table-title">Rotación — Real vs Esperada (último mes)</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="tabla-rotacion">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Esperada/mes</th>
+                <th>Real/mes</th>
+                <th>Progreso</th>
+                <th>Estado</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-rotacion"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONVERSION -->
+    <div class="tab-panel" id="tab-conversion">
+      <div class="table-wrapper">
+        <div class="table-header">
+          <span class="table-title">Tasa de Conversión (últimos 30 días)</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="tabla-conversion">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Visitas</th>
+                <th>Ventas</th>
+                <th>Conversión</th>
+                <th>Evaluación</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-conversion"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- PREGUNTAS -->
+    <div class="tab-panel" id="tab-preguntas">
+      <div id="preguntas-container">
+        <div class="empty-state">Cargando preguntas...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG & STATE
+// ============================================================
+const IVA = 1.19;
+let CONFIG = {
+  token: '',
+  sheetId: '',
+  diasAlerta: 7,
+  stockAlerta: 3,
+  sellerId: ''
+};
+let STATE = {
+  productos: [],      // desde Google Sheet
+  inventario: {},     // desde hoja local, keyed by codigo
+  items: [],          // datos ML enriquecidos
+  preguntas: [],
+  filtroPublicaciones: 'todas'
+};
+
+// ============================================================
+// UTILS
+// ============================================================
+const fmt = n => isNaN(n) ? '—' : '$' + Math.round(n).toLocaleString('es-CL');
+const fmtPct = n => isNaN(n) ? '—' : n.toFixed(1) + '%';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+async function mlFetch(path) {
+  const r = await fetch('https://api.mercadolibre.com' + path, {
+    headers: { Authorization: 'Bearer ' + CONFIG.token }
+  });
+  if (!r.ok) throw new Error('ML API error: ' + r.status + ' ' + path);
+  return r.json();
+}
+
+function setLoadingStep(txt) {
+  const el = document.getElementById('loading-step');
+  if (el) el.textContent = txt;
+}
+
+// ============================================================
+// GOOGLE SHEETS — leer CSV públicamente
+// ============================================================
+async function leerSheet(sheetId, gid) {
+  const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('No se pudo leer el Google Sheet. Asegúrate de que esté compartido públicamente.');
+  const txt = await r.text();
+  return csvToArray(txt);
+}
+
+function csvToArray(csv) {
+  const lines = csv.trim().split('\n');
+  const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim().toLowerCase().replace(/ /g, '_'));
+  return lines.slice(1).map(line => {
+    const vals = parseCsvLine(line);
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = (vals[i] || '').replace(/"/g, '').trim());
+    return obj;
+  });
+}
+
+function parseCsvLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    if (line[i] === '"') { inQuotes = !inQuotes; continue; }
+    if (line[i] === ',' && !inQuotes) { result.push(current); current = ''; continue; }
+    current += line[i];
+  }
+  result.push(current);
+  return result;
+}
+
+function limpiarNumero(str) {
+  if (!str) return 0;
+  return parseFloat(str.replace(/[$\.\s]/g, '').replace(',', '.')) || 0;
+}
+
+// ============================================================
+// CONECTAR
+// ============================================================
+async function conectar() {
+  const token = document.getElementById('token-input').value.trim();
+  const sheetId = document.getElementById('sheet-id').value.trim();
+  const diasAlerta = parseInt(document.getElementById('dias-alerta').value) || 7;
+  const stockAlerta = parseInt(document.getElementById('stock-alerta').value) || 3;
+
+  if (!token) { showLoginError('Ingresa el Access Token'); return; }
+  if (!sheetId) { showLoginError('Ingresa el Sheet ID'); return; }
+
+  CONFIG = { token, sheetId, diasAlerta, stockAlerta };
+  document.getElementById('btn-connect').disabled = true;
+
+  try {
+    document.getElementById('loading').style.display = 'flex';
+
+    // 1. Verificar token
+    setLoadingStep('Verificando credenciales ML...');
+    const me = await mlFetch('/users/me');
+    CONFIG.sellerId = me.id;
+    document.getElementById('seller-name').textContent = me.nickname || me.id;
+
+    // 2. Leer Google Sheet - productos
+    setLoadingStep('Leyendo Google Sheet (productos)...');
+    await cargarSheetProductos();
+
+    // 3. Leer Google Sheet - inventario local
+    setLoadingStep('Leyendo Google Sheet (inventario local)...');
+    await cargarSheetLocal();
+
+    // 4. Cargar datos ML
+    setLoadingStep('Cargando publicaciones desde ML...');
+    await cargarDatosML();
+
+    // 5. Renderizar
+    setLoadingStep('Renderizando dashboard...');
+    renderDashboard();
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+
+    const now = new Date();
+    document.getElementById('last-update').textContent = 'Actualizado: ' + now.toLocaleTimeString('es-CL');
+
+  } catch(e) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('btn-connect').disabled = false;
+    showLoginError(e.message);
+    console.error(e);
+  }
+}
+
+function showLoginError(msg) {
+  document.getElementById('login-error').innerHTML = `<div class="error-box">✗ ${msg}</div>`;
+}
+
+// ============================================================
+// CARGAR SHEET PRODUCTOS
+// ============================================================
+async function cargarSheetProductos() {
+  // GID 0 = primera hoja
+  const rows = await leerSheet(CONFIG.sheetId, 0);
+  STATE.productos = rows.filter(r => r.item_id && r.item_id.trim()).map(r => ({
+    item_id: 'MLC' + r.item_id.replace(/MLC/gi, '').trim(),
+    item_id_num: r.item_id.replace(/MLC/gi, '').trim(),
+    sku_local: r.sku_local || '',
+    sku_meli: r.sku_meli || '',
+    costo_neto: limpiarNumero(r.costo_neto),
+    precio_objetivo: limpiarNumero(r.precio_objetivo),
+    rotacion_esperada: parseFloat(r.rotacion_esperada) || 0
+  }));
+  if (STATE.productos.length === 0) throw new Error('No se encontraron productos en la hoja "productos". Revisa que el Sheet sea público.');
+}
+
+// ============================================================
+// CARGAR SHEET LOCAL (inventario)
+// ============================================================
+async function cargarSheetLocal() {
+  try {
+    // Intentar leer hoja "local" — necesitamos el GID
+    // Primero intentamos con gid=1 (segunda hoja)
+    const rows = await leerSheet(CONFIG.sheetId, 760689703);
+    STATE.inventario = {};
+    rows.forEach(r => {
+      const codigo = (r.código || r.codigo || r['código'] || '').trim();
+      if (!codigo) return;
+      const qn = limpiarNumero(r['quinta_normal_(shopify)'] || r['quinta_normal'] || r.quinta_normal || '0');
+      const fullML = limpiarNumero(r['mercadolibre_full'] || r.mercadolibre_full || '0');
+      const costoPromedio = limpiarNumero(r['costo_promedio'] || r.costo_promedio || '0');
+      STATE.inventario[codigo] = { quinta_normal: qn, full_ml: fullML, costo_promedio: costoPromedio };
+    });
+  } catch(e) {
+    console.warn('No se pudo leer hoja local:', e.message);
+    STATE.inventario = {};
+  }
+}
+
+// ============================================================
+// CARGAR DATOS ML
+// ============================================================
+async function cargarDatosML() {
+  const itemIds = STATE.productos.map(p => p.item_id_num);
+  const chunks = [];
+  for (let i = 0; i < itemIds.length; i += 20) chunks.push(itemIds.slice(i, i + 20));
+
+  let mlItems = [];
+  for (const chunk of chunks) {
+    setLoadingStep(`Cargando items ML (${mlItems.length + chunk.length}/${itemIds.length})...`);
+    const data = await mlFetch('/items?ids=' + chunk.map(id => 'MLC' + id).join(',') + '&attributes=id,title,price,base_price,status,listing_type_id,health,available_quantity,sold_quantity,shipping,sale_terms,last_updated');
+    mlItems = mlItems.concat(data);
+    await sleep(200);
+  }
+
+  // Cargar visitas y ventas (últimos 30 días)
+  setLoadingStep('Cargando métricas de visitas...');
+  const visitsMap = {};
+  const soldMap = {};
+
+  for (const p of STATE.productos) {
+    try {
+      const visits = await mlFetch(`/items/${p.item_id}/visits?last=30`);
+      visitsMap[p.item_id] = visits.total_visits || 0;
+      await sleep(150);
+    } catch(e) { visitsMap[p.item_id] = 0; }
+  }
+
+  // Ventas últimos 30 días
+  setLoadingStep('Cargando ventas del mes...');
+  try {
+    const dateFrom = new Date();
+    dateFrom.setDate(dateFrom.getDate() - 30);
+    const dfStr = dateFrom.toISOString().split('T')[0] + 'T00:00:00.000-04:00';
+    const orders = await mlFetch(`/orders/search?seller=${CONFIG.sellerId}&order.status=paid&order.date_created.from=${encodeURIComponent(dfStr)}&limit=50`);
+    if (orders.results) {
+      orders.results.forEach(order => {
+        order.order_items.forEach(oi => {
+          const id = oi.item.id;
+          soldMap[id] = (soldMap[id] || 0) + (oi.quantity || 1);
+        });
+      });
+    }
+    // Paginar si hay más
+    if (orders.paging && orders.paging.total > 50) {
+      const pages = Math.ceil(Math.min(orders.paging.total, 200) / 50);
+      for (let p2 = 1; p2 < pages; p2++) {
+        const more = await mlFetch(`/orders/search?seller=${CONFIG.sellerId}&order.status=paid&order.date_created.from=${encodeURIComponent(dfStr)}&limit=50&offset=${p2*50}`);
+        if (more.results) {
+          more.results.forEach(order => {
+            order.order_items.forEach(oi => {
+              const id = oi.item.id;
+              soldMap[id] = (soldMap[id] || 0) + (oi.quantity || 1);
+            });
+          });
+        }
+        await sleep(200);
+      }
+    }
+  } catch(e) { console.warn('Error cargando órdenes:', e); }
+
+  // Preguntas sin responder
+  setLoadingStep('Cargando preguntas...');
+  try {
+    const q = await mlFetch(`/questions/search?seller_id=${CONFIG.sellerId}&status=UNANSWERED&limit=50`);
+    STATE.preguntas = q.questions || [];
+  } catch(e) { STATE.preguntas = []; }
+
+  // Combinar todo
+  STATE.items = STATE.productos.map(prod => {
+    const mlRaw = mlItems.find(m => m && m.body && m.body.id === prod.item_id);
+    const ml = mlRaw ? mlRaw.body : null;
+
+    // Comisión real desde sale_terms
+    let comisionPct = 0;
+    if (ml && ml.sale_terms) {
+      const ct = ml.sale_terms.find(t => t.id === 'SELLER_PROTECTION_TIME');
+      // Intentar obtener de listing_type
+    }
+    // Estimación por tipo de publicación
+    if (ml) {
+      if (ml.listing_type_id === 'gold_pro') comisionPct = 0.135;
+      else if (ml.listing_type_id === 'gold_special') comisionPct = 0.135;
+      else if (ml.listing_type_id === 'gold_premium') comisionPct = 0.135;
+      else comisionPct = 0.09; // clásica
+    }
+
+    const precio = ml ? ml.price : 0;
+    const costoEnvio = (ml && ml.shipping && ml.shipping.free_shipping) ? (precio * 0.03) : 0;
+    const ingresoBruto = precio - (precio * comisionPct) - costoEnvio;
+    const ingresoNeto = ingresoBruto / IVA;
+    const utilidadNeta = ingresoNeto - prod.costo_neto;
+    const margenNeto = ingresoNeto > 0 ? (utilidadNeta / ingresoNeto * 100) : 0;
+
+    // Stock
+    const inv = STATE.inventario[prod.sku_local] || null;
+    const stockLocal = inv ? inv.quinta_normal : null;
+    const stockML = ml ? ml.available_quantity : null;
+    const stockFull = inv ? inv.full_ml : 0;
+
+    // Días sin venta (aproximado desde last_updated si sold=0)
+    const ventasMes = soldMap[prod.item_id] || 0;
+    const diasSinVenta = ventasMes === 0 && ml ? Math.floor((Date.now() - new Date(ml.last_updated)) / 86400000) : 0;
+
+    // Calidad
+    let calidad = 'unknown';
+    if (ml && ml.health !== undefined) {
+      if (ml.health >= 0.7) calidad = 'green';
+      else if (ml.health >= 0.4) calidad = 'yellow';
+      else calidad = 'red';
+    }
+
+    // Precio fuera de objetivo
+    const precioFueraObjetivo = prod.precio_objetivo > 0 && precio > prod.precio_objetivo * 1.02;
+
+    return {
+      ...prod,
+      ml,
+      precio,
+      comisionPct,
+      costoEnvio,
+      ingresoBruto,
+      ingresoNeto,
+      utilidadNeta,
+      margenNeto,
+      stockLocal,
+      stockML,
+      stockFull,
+      ventasMes,
+      visitas: visitsMap[prod.item_id] || 0,
+      diasSinVenta,
+      calidad,
+      precioFueraObjetivo,
+      tieneAlerta: precioFueraObjetivo || (stockLocal !== null && stockML !== null && stockML > stockLocal + 2) || calidad === 'red' || diasSinVenta >= CONFIG.diasAlerta || (stockML !== null && stockML <= CONFIG.stockAlerta)
+    };
+  });
+}
+
+// ============================================================
+// RENDER DASHBOARD
+// ============================================================
+function renderDashboard() {
+  renderSummary();
+  renderAlertas();
+  renderPublicaciones();
+  renderMargenes();
+  renderStock();
+  renderRotacion();
+  renderConversion();
+  renderPreguntas();
+}
+
+function renderSummary() {
+  const items = STATE.items;
+  const totalPublicaciones = items.filter(i => i.ml && i.ml.status === 'active').length;
+  const totalAlertas = items.filter(i => i.tieneAlerta).length;
+  const precioFuera = items.filter(i => i.precioFueraObjetivo).length;
+  const stockCritico = items.filter(i => i.stockML !== null && i.stockML <= CONFIG.stockAlerta).length;
+  const preguntasPend = STATE.preguntas.length;
+  const margenProm = items.filter(i => i.margenNeto !== 0).reduce((a, b) => a + b.margenNeto, 0) / (items.filter(i => i.margenNeto !== 0).length || 1);
+
+  document.getElementById('summary-bar').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-label">Publicaciones activas</div>
+      <div class="summary-value">${totalPublicaciones}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Alertas activas</div>
+      <div class="summary-value ${totalAlertas > 0 ? 'red' : 'green'}">${totalAlertas}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Precio fuera objetivo</div>
+      <div class="summary-value ${precioFuera > 0 ? 'yellow' : 'green'}">${precioFuera}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Stock crítico</div>
+      <div class="summary-value ${stockCritico > 0 ? 'red' : 'green'}">${stockCritico}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Preguntas pendientes</div>
+      <div class="summary-value ${preguntasPend > 0 ? 'yellow' : 'green'}">${preguntasPend}</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-label">Margen neto promedio</div>
+      <div class="summary-value ${margenProm < 10 ? 'red' : margenProm < 20 ? 'yellow' : 'green'}">${fmtPct(margenProm)}</div>
+    </div>
+  `;
+}
+
+function renderAlertas() {
+  const alertas = [];
+  STATE.items.forEach(item => {
+    const nombre = item.ml ? item.ml.title : item.item_id;
+    const sku = item.sku_local;
+
+    if (item.precioFueraObjetivo) {
+      alertas.push({ tipo: 'critical', icon: '💸', texto: `<strong>${nombre}</strong> — Precio actual ${fmt(item.precio)} supera el objetivo ${fmt(item.precio_objetivo)}. Promoción posiblemente vencida.`, sku });
+    }
+    if (item.stockML !== null && item.stockLocal !== null && item.stockML > item.stockLocal + 2) {
+      alertas.push({ tipo: 'critical', icon: '📦', texto: `<strong>${nombre}</strong> — Stock ML (${item.stockML} un.) mayor al stock local Quinta Normal (${item.stockLocal} un.). Riesgo de quiebre.`, sku });
+    }
+    if (item.stockML !== null && item.stockML <= CONFIG.stockAlerta && item.stockML > 0) {
+      alertas.push({ tipo: 'warning', icon: '⚡', texto: `<strong>${nombre}</strong> — Stock crítico en ML: solo ${item.stockML} unidades disponibles.`, sku });
+    }
+    if (item.calidad === 'red') {
+      alertas.push({ tipo: 'critical', icon: '📉', texto: `<strong>${nombre}</strong> — Calidad de publicación baja. Revisión urgente requerida.`, sku });
+    } else if (item.calidad === 'yellow') {
+      alertas.push({ tipo: 'warning', icon: '⚠️', texto: `<strong>${nombre}</strong> — Calidad de publicación media. Puede mejorar.`, sku });
+    }
+    if (item.diasSinVenta >= CONFIG.diasAlerta) {
+      alertas.push({ tipo: 'warning', icon: '😴', texto: `<strong>${nombre}</strong> — Sin ventas en el último mes. Revisar precio, fotos y descripción.`, sku });
+    }
+    if (item.ml && item.ml.status === 'paused') {
+      alertas.push({ tipo: 'critical', icon: '⏸', texto: `<strong>${nombre}</strong> — Publicación PAUSADA. No está generando ventas.`, sku });
+    }
+  });
+
+  // Preguntas sin responder
+  if (STATE.preguntas.length > 0) {
+    alertas.push({ tipo: 'warning', icon: '💬', texto: `Tienes <strong>${STATE.preguntas.length} pregunta(s)</strong> sin responder. ML penaliza el tiempo de respuesta.`, sku: '' });
+  }
+
+  const container = document.getElementById('alerts-container');
+  if (alertas.length === 0) {
+    container.innerHTML = `<div class="empty-state" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--green)">✓ SIN ALERTAS — Todo opera correctamente</div>`;
+    return;
+  }
+  container.innerHTML = alertas.map(a => `
+    <div class="alert-item ${a.tipo}">
+      <span class="alert-icon">${a.icon}</span>
+      <span class="alert-text">${a.texto}</span>
+      ${a.sku ? `<span class="alert-sku">${a.sku}</span>` : ''}
+    </div>
+  `).join('');
+}
+
+function renderPublicaciones() {
+  const tbody = document.getElementById('tbody-publicaciones');
+  let items = STATE.items;
+  if (STATE.filtroPublicaciones === 'alerta') items = items.filter(i => i.tieneAlerta);
+  if (STATE.filtroPublicaciones === 'paused') items = items.filter(i => i.ml && i.ml.status === 'paused');
+
+  tbody.innerHTML = items.map(item => {
+    const ml = item.ml;
+    const nombre = ml ? ml.title : item.item_id;
+    const estado = ml ? ml.status : 'unknown';
+    const estadoBadge = estado === 'active' ? `<span class="badge badge-green">ACTIVA</span>` :
+                        estado === 'paused' ? `<span class="badge badge-red">PAUSADA</span>` :
+                        `<span class="badge badge-gray">${estado.toUpperCase()}</span>`;
+
+    const calidadDot = item.calidad === 'green' ? `<span class="quality-dot q-green"></span>Alta` :
+                       item.calidad === 'yellow' ? `<span class="quality-dot q-yellow"></span>Media` :
+                       item.calidad === 'red' ? `<span class="quality-dot q-red"></span>Baja` :
+                       `<span class="quality-dot q-gray"></span>—`;
+
+    const precioBadge = item.precioFueraObjetivo ?
+      `<span class="badge badge-red">⚠ FUERA</span>` :
+      `<span class="badge badge-green">OK</span>`;
+
+    const tipoLabel = ml ? (ml.listing_type_id === 'gold_pro' || ml.listing_type_id === 'gold_premium' ? 'Premium' : 'Clásica') : '—';
+
+    const diasBadge = item.diasSinVenta >= CONFIG.diasAlerta ?
+      `<span class="badge badge-red">${item.diasSinVenta}d</span>` :
+      item.diasSinVenta > 0 ? `<span class="badge badge-yellow">${item.diasSinVenta}d</span>` :
+      `<span class="badge badge-green">Reciente</span>`;
+
+    return `<tr>
+      <td>
+        <div class="product-name" title="${nombre}">${nombre}</div>
+        <div class="product-sku">${item.sku_local}</div>
+        <a class="product-link" href="https://articulo.mercadolibre.cl/${item.item_id}" target="_blank">Ver en ML ↗</a>
+      </td>
+      <td>${estadoBadge}</td>
+      <td>${calidadDot}</td>
+      <td class="mono">${fmt(item.precio)}</td>
+      <td class="mono">${fmt(item.precio_objetivo)}</td>
+      <td>${precioBadge}</td>
+      <td><span class="badge badge-blue">${tipoLabel}</span></td>
+      <td>${diasBadge}</td>
+      <td><a class="product-link" href="https://www.mercadolibre.cl/anuncios/${item.item_id_num}/editar" target="_blank">Editar ↗</a></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="9" class="empty-state">Sin publicaciones</td></tr>';
+}
+
+function renderMargenes() {
+  const tbody = document.getElementById('tbody-margenes');
+  tbody.innerHTML = STATE.items.map(item => {
+    const ml = item.ml;
+    const nombre = ml ? ml.title : item.item_id;
+    const margenColor = item.margenNeto < 10 ? 'red' : item.margenNeto < 20 ? 'yellow' : 'green';
+    const utilColor = item.utilidadNeta < 0 ? 'red' : 'green';
+    const tipoEnvio = ml && ml.shipping && ml.shipping.free_shipping ? 'Gratis' : 'Comprador';
+
+    return `<tr>
+      <td>
+        <div class="product-name" title="${nombre}">${nombre}</div>
+        <div class="product-sku">${item.sku_local}</div>
+      </td>
+      <td class="mono">${fmt(item.precio)}</td>
+      <td class="mono">${fmtPct(item.comisionPct * 100)}<br><span style="color:var(--text2);font-size:10px">${fmt(item.precio * item.comisionPct)}</span></td>
+      <td class="mono">${tipoEnvio}<br><span style="color:var(--text2);font-size:10px">${fmt(item.costoEnvio)}</span></td>
+      <td class="mono">${fmt(item.ingresoBruto)}</td>
+      <td class="mono">${fmt(item.ingresoNeto)}</td>
+      <td class="mono">${fmt(item.costo_neto)}</td>
+      <td class="mono" style="color:var(--${utilColor})">${fmt(item.utilidadNeta)}</td>
+      <td><span class="badge badge-${margenColor}">${fmtPct(item.margenNeto)}</span></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="9" class="empty-state">Sin datos</td></tr>';
+}
+
+function renderStock() {
+  const tbody = document.getElementById('tbody-stock');
+  tbody.innerHTML = STATE.items.map(item => {
+    const ml = item.ml;
+    const nombre = ml ? ml.title : item.item_id;
+    const qn = item.stockLocal;
+    const stockML = item.stockML;
+    const diff = (qn !== null && stockML !== null) ? (qn - stockML) : null;
+
+    let estadoBadge = '<span class="badge badge-gray">Sin datos</span>';
+    if (qn !== null && stockML !== null) {
+      if (stockML > qn + 2) estadoBadge = '<span class="badge badge-red">⚠ RIESGO QUIEBRE</span>';
+      else if (stockML <= CONFIG.stockAlerta) estadoBadge = '<span class="badge badge-yellow">STOCK CRÍTICO</span>';
+      else if (diff >= 0) estadoBadge = '<span class="badge badge-green">OK</span>';
+      else estadoBadge = '<span class="badge badge-yellow">REVISAR</span>';
+    }
+
+    return `<tr>
+      <td>
+        <div class="product-name" title="${nombre}">${nombre}</div>
+      </td>
+      <td class="mono">${item.sku_local}</td>
+      <td class="mono" style="color:var(--blue)">${qn !== null ? qn + ' un.' : '—'}</td>
+      <td class="mono" style="color:var(--green)">${stockML !== null ? stockML + ' un.' : '—'}</td>
+      <td class="mono" style="color:var(--text2)">${item.stockFull ? item.stockFull + ' un.' : '—'}</td>
+      <td class="mono" style="color:${diff !== null ? (diff < 0 ? 'var(--red)' : 'var(--green)') : 'var(--text2)'}">${diff !== null ? (diff >= 0 ? '+' : '') + diff + ' un.' : '—'}</td>
+      <td>${estadoBadge}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="7" class="empty-state">Sin datos</td></tr>';
+}
+
+function renderRotacion() {
+  const tbody = document.getElementById('tbody-rotacion');
+  tbody.innerHTML = STATE.items.map(item => {
+    const ml = item.ml;
+    const nombre = ml ? ml.title : item.item_id;
+    const esperada = item.rotacion_esperada;
+    const real = item.ventasMes;
+    const pct = esperada > 0 ? Math.min((real / esperada) * 100, 100) : 0;
+    const color = pct >= 80 ? 'var(--green)' : pct >= 50 ? 'var(--yellow)' : 'var(--red)';
+    const estadoBadge = pct >= 80 ? '<span class="badge badge-green">EN PLAN</span>' :
+                        pct >= 50 ? '<span class="badge badge-yellow">BAJO PLAN</span>' :
+                        '<span class="badge badge-red">MUY BAJO</span>';
+
+    return `<tr>
+      <td>
+        <div class="product-name" title="${nombre}">${nombre}</div>
+        <div class="product-sku">${item.sku_local}</div>
+      </td>
+      <td class="mono">${esperada} un.</td>
+      <td class="mono">${real} un.</td>
+      <td>
+        <div class="progress-wrap">
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${pct}%;background:${color}"></div>
+          </div>
+          <span class="progress-label">${Math.round(pct)}%</span>
+        </div>
+      </td>
+      <td>${estadoBadge}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" class="empty-state">Sin datos</td></tr>';
+}
+
+function renderConversion() {
+  const tbody = document.getElementById('tbody-conversion');
+  tbody.innerHTML = STATE.items.map(item => {
+    const ml = item.ml;
+    const nombre = ml ? ml.title : item.item_id;
+    const visitas = item.visitas;
+    const ventas = item.ventasMes;
+    const conv = visitas > 0 ? (ventas / visitas * 100) : 0;
+    const convColor = conv >= 5 ? 'green' : conv >= 2 ? 'yellow' : 'red';
+    let eval_txt = '';
+    if (visitas === 0) eval_txt = '<span class="badge badge-gray">SIN VISITAS</span>';
+    else if (ventas === 0) eval_txt = '<span class="badge badge-red">0 VENTAS — REVISAR</span>';
+    else if (conv < 2) eval_txt = '<span class="badge badge-red">BAJA</span>';
+    else if (conv < 5) eval_txt = '<span class="badge badge-yellow">MEDIA</span>';
+    else eval_txt = '<span class="badge badge-green">BUENA</span>';
+
+    return `<tr>
+      <td>
+        <div class="product-name" title="${nombre}">${nombre}</div>
+        <div class="product-sku">${item.sku_local}</div>
+      </td>
+      <td class="mono">${visitas.toLocaleString('es-CL')}</td>
+      <td class="mono">${ventas}</td>
+      <td><span class="badge badge-${convColor}">${fmtPct(conv)}</span></td>
+      <td>${eval_txt}</td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" class="empty-state">Sin datos</td></tr>';
+}
+
+function renderPreguntas() {
+  const container = document.getElementById('preguntas-container');
+  if (STATE.preguntas.length === 0) {
+    container.innerHTML = `<div class="empty-state" style="background:var(--surface);border:1px solid var(--border);border-radius:12px;color:var(--green)">✓ SIN PREGUNTAS PENDIENTES</div>`;
+    return;
+  }
+  container.innerHTML = STATE.preguntas.map(q => {
+    const hace = Math.floor((Date.now() - new Date(q.date_created)) / 3600000);
+    const haceStr = hace < 24 ? hace + 'h' : Math.floor(hace/24) + 'd';
+    const urgente = hace > 24;
+    return `
+      <div class="question-item">
+        <div class="question-meta">
+          <span class="badge ${urgente ? 'badge-red' : 'badge-yellow'}">Hace ${haceStr}</span>
+          ${urgente ? '<span class="badge badge-red">URGENTE</span>' : ''}
+        </div>
+        <div class="question-text">"${q.text}"</div>
+        <div class="question-product">Item: ${q.item_id} — <a href="https://www.mercadolibre.cl/preguntas-y-respuestas-del-vendedor" target="_blank" style="color:var(--accent)">Responder ↗</a></div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// FILTROS Y TABS
+// ============================================================
+function switchTab(name, el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+}
+
+function filtrarPublicaciones(filtro, el) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  STATE.filtroPublicaciones = filtro;
+  renderPublicaciones();
+}
+
+async function refreshData() {
+  document.getElementById('loading').style.display = 'flex';
+  try {
+    await cargarDatosML();
+    renderDashboard();
+    document.getElementById('last-update').textContent = 'Actualizado: ' + new Date().toLocaleTimeString('es-CL');
+  } catch(e) {
+    console.error(e);
+    alert('Error al actualizar: ' + e.message);
+  }
+  document.getElementById('loading').style.display = 'none';
+}
+
+function cerrarSesion() {
+  CONFIG = { token: '', sheetId: '', diasAlerta: 7, stockAlerta: 3, sellerId: '' };
+  STATE = { productos: [], inventario: {}, items: [], preguntas: [], filtroPublicaciones: 'todas' };
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('token-input').value = '';
+  document.getElementById('btn-connect').disabled = false;
+  document.getElementById('login-error').innerHTML = '';
+}
+</script>
+</body>
+</html>
