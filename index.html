@@ -537,8 +537,12 @@
       <input type="password" id="token-input" placeholder="APP_USR-..." />
     </div>
     <div class="field">
-      <label>Google Sheet ID</label>
-      <input type="text" id="sheet-id" placeholder="1-lgD8WQodkN0RimvhTHvcjEO2d_-GB1qi3kQQwrrzYg" value="1-lgD8WQodkN0RimvhTHvcjEO2d_-GB1qi3kQQwrrzYg" />
+      <label>URL Hoja "productos" (CSV publicado)</label>
+      <input type="text" id="sheet-productos-url" placeholder="https://docs.google.com/spreadsheets/d/e/..." value="https://docs.google.com/spreadsheets/d/e/2PACX-1vRmW17t1t-2PXCpMJ2zVeRilx9Q12Nq_8e5vuTbvxb5EIvBSqWyq0o9iaM6kG1ryjEIow2cKDnG1PNY/pub?output=csv" />
+    </div>
+    <div class="field">
+      <label>URL Hoja "local" (CSV publicado) — opcional</label>
+      <input type="text" id="sheet-local-url" placeholder="https://docs.google.com/spreadsheets/d/e/...&gid=XXXXXX" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vRmW17t1t-2PXCpMJ2zVeRilx9Q12Nq_8e5vuTbvxb5EIvBSqWyq0o9iaM6kG1ryjEIow2cKDnG1PNY/pub?gid=295446861&single=true&output=csv" />
     </div>
     <div class="field">
       <label>Días sin venta para alertar</label>
@@ -772,6 +776,13 @@ function setLoadingStep(txt) {
 // ============================================================
 // GOOGLE SHEETS — leer CSV públicamente
 // ============================================================
+async function leerSheetUrl(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error('No se pudo leer el Google Sheet. Verifica que esté publicado como CSV.');
+  const txt = await r.text();
+  return csvToArray(txt);
+}
+
 async function leerSheet(sheetId, gid) {
   const url = `https://docs.google.com/spreadsheets/d/${sheetId}/export?format=csv&gid=${gid}`;
   const r = await fetch(url);
@@ -814,14 +825,15 @@ function limpiarNumero(str) {
 // ============================================================
 async function conectar() {
   const token = document.getElementById('token-input').value.trim();
-  const sheetId = document.getElementById('sheet-id').value.trim();
+  const sheetProductosUrl = document.getElementById('sheet-productos-url').value.trim();
+  const sheetLocalUrl = document.getElementById('sheet-local-url').value.trim();
   const diasAlerta = parseInt(document.getElementById('dias-alerta').value) || 7;
   const stockAlerta = parseInt(document.getElementById('stock-alerta').value) || 3;
 
   if (!token) { showLoginError('Ingresa el Access Token'); return; }
-  if (!sheetId) { showLoginError('Ingresa el Sheet ID'); return; }
+  if (!sheetProductosUrl) { showLoginError('Ingresa la URL del Sheet de productos'); return; }
 
-  CONFIG = { token, sheetId, diasAlerta, stockAlerta };
+  CONFIG = { token, sheetProductosUrl, sheetLocalUrl, diasAlerta, stockAlerta };
   document.getElementById('btn-connect').disabled = true;
 
   try {
@@ -872,8 +884,7 @@ function showLoginError(msg) {
 // CARGAR SHEET PRODUCTOS
 // ============================================================
 async function cargarSheetProductos() {
-  // GID 0 = primera hoja
-  const rows = await leerSheet(CONFIG.sheetId, 0);
+  const rows = await leerSheetUrl(CONFIG.sheetProductosUrl);
   STATE.productos = rows.filter(r => r.item_id && r.item_id.trim()).map(r => ({
     item_id: 'MLC' + r.item_id.replace(/MLC/gi, '').trim(),
     item_id_num: r.item_id.replace(/MLC/gi, '').trim(),
@@ -891,9 +902,8 @@ async function cargarSheetProductos() {
 // ============================================================
 async function cargarSheetLocal() {
   try {
-    // Intentar leer hoja "local" — necesitamos el GID
-    // Primero intentamos con gid=1 (segunda hoja)
-    const rows = await leerSheet(CONFIG.sheetId, 760689703);
+    if (!CONFIG.sheetLocalUrl) { STATE.inventario = {}; return; }
+    const rows = await leerSheetUrl(CONFIG.sheetLocalUrl);
     STATE.inventario = {};
     rows.forEach(r => {
       const codigo = (r.código || r.codigo || r['código'] || '').trim();
